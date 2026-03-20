@@ -1,5 +1,5 @@
-#include "../include/common.h"
-#include "../include/process.h"
+#include "common.h"
+#include "process.h"
 
 pid_t spwan_container(struct container_config *config) {
     (void)config;

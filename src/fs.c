@@ -1,5 +1,5 @@
-#include "../include/common.h"
-#include "../include/fs.h"
+#include "common.h"
+#include "fs.h"
 
 int setup_rootfs(const struct container_config *config) {
     (void)config;

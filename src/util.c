@@ -1,6 +1,6 @@
-#include "../include/common.h"
-#include "../include/util.h"
-#include "../include/error.h"
+#include "common.h"
+#include "util.h"
+#include "error.h"
 
 void *xmalloc(size_t size) {
     void *ptr = malloc(size);

@@ -1,6 +1,6 @@
-#include "../include/common.h"
-#include "../include/runtime.h"
-#include "../include/error.h"
+#include "common.h"
+#include "runtime.h"
+#include "error.h"
 #include <stdio.h>
 
 int run_container(struct container_config *config) {

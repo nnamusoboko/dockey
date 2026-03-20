@@ -1,7 +1,7 @@
-#include "../include/common.h"
-#include "../include/config.h"
-#include "../include/runtime.h"
-#include "../include/error.h"
+#include "common.h"
+#include "config.h"
+#include "runtime.h"
+#include "error.h"
 
 static void usage(const char *progname) {
     fprintf(stderr, "Usage: %s run <command> [args...]\n", progname);

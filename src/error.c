@@ -1,5 +1,5 @@
-#include "../include/common.h"
-#include "../include/fs.h"
+#include "common.h"
+#include "fs.h"
 
 void die(const char *msg) {
     fprintf(stderr, "error: %s\n", msg);
