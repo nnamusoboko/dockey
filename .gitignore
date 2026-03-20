@@ -1,0 +1,12 @@
+# binaries
+mini-docker
+
+# object files
+*.o
+
+# build directories
+build/
+
+# temporary files
+*.log
+*.tmp
