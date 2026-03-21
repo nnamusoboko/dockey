@@ -29,3 +29,8 @@ int run_container(struct container_config *config) {
 
     return EXIT_FAILURE;
 }
+
+static void pdie(const char *msg) {
+    perror(msg);
+    exit(EXIT_FAILURE);
+} 
