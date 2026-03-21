@@ -42,7 +42,7 @@ int child_entry(void *arg) {
     struct container_config *config = ctx->config;
 
     if (config->use_uts_ns) {
-        if (sethostname(config->hostname, strlen(config->hostanme)) < 0) {
+        if (sethostname(config->hostname, strlen(config->hostname)) < 0) {
             pdie("sethostname");
         }
     }
