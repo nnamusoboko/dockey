@@ -7,7 +7,7 @@ struct child_context {
     struct container_config *config;
 };
 
-pid_t spwan_container(struct container_config *config);
+pid_t spawn_container(struct container_config *config);
 int child_entry(void *arg);
 
 #endif
