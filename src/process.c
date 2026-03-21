@@ -27,6 +27,19 @@ pid_t spawn_container(struct container_config *config) {
 }
 
 int child_entry(void *arg) {
-    (void)arg;
-    return -1;
+    struct child_context *ctx = arg;
+    struct container_config *config = ctx->config;
+
+    if (config->use_uts_ns) {
+        if (sethostname(config->hostname, strlen(config->hostanme)) < 0) {
+            pdie("sethostname");
+        }
+    }
+
+    execvp(config->argv[0], config->argv);
+
+    /*
+     * We only get here if execvp() fails
+     * */
+    pdie("execvp");
 }
