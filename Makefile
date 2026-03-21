@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -D_GNU_SOURCE -Wall -Wextra -Werror -std=c11 -Iinclude
+CFLAGS = -Wall -Wextra -Werror -std=c11 -Iinclude
 
 SRC = src/main.c src/runtime.c src/process.c src/fs.c src/mount.c
 OBJ = $(SRC:.c=.o)
