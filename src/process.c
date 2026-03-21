@@ -55,4 +55,6 @@ int child_entry(void *arg) {
      * We only get here if execvp() fails
      * */
     pdie("execvp");
+
+    return -1;
 }
