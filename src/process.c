@@ -3,7 +3,7 @@
 #include "error.h"
 #include <sys/types.h>
 
-pid_t spwan_container(struct container_config *config) {
+pid_t spawn_container(struct container_config *config) {
     pid_t pid;
     
     pid = fork();
