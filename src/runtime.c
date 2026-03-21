@@ -1,9 +1,12 @@
-#include "common.h"
-#include "runtime.h"
-#include "error.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+
+#include "runtime.h"
 #include "process.h"
+
+static void pdie(const char *msg);
 
 int run_container(struct container_config *config) {
     pid_t child_pid;
