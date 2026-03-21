@@ -1,8 +1,15 @@
-#include "common.h"
+#define _GNU_SOURCE
+
+#include <sched.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 #include "process.h"
-#include "error.h"
-#include <sys/types.h>
-#include "util.h"
+
+#define STACK_SIZE (1024 * 1024)
 
 
 pid_t spawn_container(struct container_config *config) {
