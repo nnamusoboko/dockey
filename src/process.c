@@ -1,6 +1,6 @@
-#define _GNU_SOURCE
+#define _GNU_SOURCE // needed for clone
 
-#include <sched.h>   // needed for clone
+#include <sched.h>   // gives clone and namespace flags
 #include <signal.h>  // SIGCHLD
 #include <stdio.h> 
 #include <stdlib.h>
