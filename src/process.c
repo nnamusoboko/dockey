@@ -10,7 +10,7 @@ pid_t spawn_container(struct container_config *config) {
     pid_t pid;
     struct child_context *ctx;
 
-    flags = SIGCHILD;
+    flags = SIGCHLD;
 
     if (config->use_pid_ns) {
         flags |= CLONE_NEWPID;
