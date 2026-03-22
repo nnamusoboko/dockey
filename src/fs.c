@@ -1,3 +1,5 @@
+#define _GNU_SOURCE // enables chroot()
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
