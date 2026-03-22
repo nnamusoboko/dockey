@@ -9,6 +9,8 @@
 #include <stddef.h> // like size_t
 
 #include "process.h"
+#include "mount.h"
+#include "fs.h"
 
 #define STACK_SIZE (1024 * 1024)
 
@@ -35,12 +37,16 @@ int child_entry(void *arg) {
         }
     }
 
-    execvp(config->argv[0], config->argv);
+    if (setup_rootfs(config) < 0) {
+        pdie("setup_rootfs");
+    }
 
-    /*
-     * We only get here if execvp() fails
-     * */
-    pdie("execvp");
+    if (setup_mounts(config) < 0) {
+        pdie("setup_mounts");
+    }
+
+    execvp(config->argv[0], config->argv);
+    pdie("execvp"); // we only reach here if execvp() fails
 
     return -1;
 }
