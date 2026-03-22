@@ -1,4 +1,3 @@
-#include "common.h"
 #include "fs.h"
 
 int setup_rootfs(const struct container_config *config) {
