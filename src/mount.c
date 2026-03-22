@@ -9,21 +9,27 @@ static void pdie(const char *msg) {
     exit(EXIT_FAILURE);
 } 
 
-int setup_mounts(const struct container_config *config) {
-    (void)config;
+int make_mounts_private(void) {
 
     /*
      * Make mount propagation private so changes in this namespace
      * do  not propagate back to the host mount tree
+     *
+     * Runs before chroot()
+     * It changes propagation on real root of this mount namespace
      * */
 
     if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) < 0) {
         pdie("mount propagation private");
     }
+    
+    return 0;
+}
 
+int mount_procfs(void) {
     /*
+     * This runs after chroot(), so /proc is inside the container rootfs
      * Mount a fresh procfs inside this mount namespace
-     * This makes /proc reflect the child PID namespace
      * */
     if (mount("proc", "/proc", "proc", 0, NULL) < 0) {
         pdie("mount /proc");
