@@ -37,6 +37,12 @@ int child_entry(void *arg) {
         }
     }
 
+    if (config->use_mount_ns) {
+        if (make_mounts_private() < 0) {
+            pdie("make_mounts_private");
+        }
+    }
+
     if (setup_rootfs(config) < 0) {
         pdie("setup_rootfs");
     }
