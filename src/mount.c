@@ -18,7 +18,7 @@ int setup_mounts(const struct container_config *config) {
      * */
 
     if (mount(NULL, "/", NULL, MS_REC | MS_PRIVATE, NULL) < 0) {
-        pdie("mount /proc");
+        pdie("mount propagation private");
     }
 
     /*
@@ -26,7 +26,7 @@ int setup_mounts(const struct container_config *config) {
      * This makes /proc reflect the child PID namespace
      * */
     if (mount("proc", "/proc", "proc", 0, NULL) < 0) {
-        pdie("mount /proc/");
+        pdie("mount /proc");
     }
 
     return 0;
