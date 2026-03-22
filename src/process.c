@@ -48,8 +48,8 @@ int child_entry(void *arg) {
     }
 
     if (config->use_mount_ns) {
-        if (setup_mounts(config) < 0) {
-            pdie("setup_mounts");
+        if (mount_procfs() < 0) {
+            pdie("mount_procfs");
         }
     }
 
