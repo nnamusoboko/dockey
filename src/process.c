@@ -41,8 +41,10 @@ int child_entry(void *arg) {
         pdie("setup_rootfs");
     }
 
-    if (setup_mounts(config) < 0) {
-        pdie("setup_mounts");
+    if (config->use_mount_ns) {
+        if (setup_mounts(config) < 0) {
+            pdie("setup_mounts");
+        }
     }
 
     execvp(config->argv[0], config->argv);
