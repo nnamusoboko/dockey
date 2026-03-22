@@ -25,7 +25,7 @@ int setup_mounts(const struct container_config *config) {
      * Mount a fresh procfs inside this mount namespace
      * This makes /proc reflect the child PID namespace
      * */
-    if (mount(NULL, "/proc", "proc", 0, NULL) < 0) {
+    if (mount("proc", "/proc", "proc", 0, NULL) < 0) {
         pdie("mount /proc/");
     }
 
