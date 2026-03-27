@@ -1,0 +1,17 @@
+rootfs/
+
+# binaries
+dockey
+
+# object files
+*.o
+
+# build directories
+build/
+
+# temporary files
+*.log
+*.tmp
+
+# vscode files 
+.vscode
