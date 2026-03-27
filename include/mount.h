@@ -1,8 +1,7 @@
 #ifndef MOUNT_H
 #define MOUNT_H
 
-#include "config.h"
-
-int setup_mounts(const struct container_config *config);
+int make_mounts_private(void); // pre-chroot
+int mount_procfs(void);        // post-chroot
 
 #endif

@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    config.hostname = "mini-container";
+    config.hostname = "container";
     config.rootfs = "./rootfs";
     config.argv = &argv[2];
     config.argc = argc -2;
