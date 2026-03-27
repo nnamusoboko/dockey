@@ -2,8 +2,6 @@
 
 A minimal container runtime built from scratch  to understand how containers actually work under the hood.
 
----
-
 ## What it does
 
 Dockey demonstrates core container concepts using Linux primitives:
@@ -17,19 +15,15 @@ Dockey demonstrates core container concepts using Linux primitives:
 
 It allows you to run a command inside an isolated environment
 
----
-
 ## Project Structure
 
-```text
+```bash
 ├── include/        # headers (interfaces)
 ├── src/            # implementation
 ├── rootfs/         # minimal filesystem for container
 ├── Makefile
 └── README.md
 ```
-
----
 
 ## Build
 
@@ -44,11 +38,9 @@ This will generate the binary:
 ./dockey
 ```
 
----
-
 ## Prepare root filesystem
 
-A minimal root filesystem is required for the container.
+A minimal root filesystem is required for the container to be functional.
 
 ### 1. Create directories
 
@@ -61,8 +53,6 @@ mkdir -p rootfs/proc
 mkdir -p rootfs/root
 ```
 
----
-
 ### 2. Copy binaries
 
 ```bash
@@ -72,8 +62,6 @@ cp /bin/ps rootfs/bin/
 cp /bin/clear rootfs/bin/
 cp /bin/rm rootfs/bin/
 ```
-
----
 
 ### 3. Copy required libraries
 
@@ -97,16 +85,12 @@ cp /lib64/ld-linux-x86-64.so.2 rootfs/lib64/
 
 (Repeat for any other libraries shown by `ldd`.)
 
----
-
 ### 4. Minimal identity setup
 
 ```bash
 echo 'root:x:0:0:root:/root:/bin/bash' > rootfs/etc/passwd
 echo 'root:x:0:' > rootfs/etc/group
 ```
-
----
 
 ### (Optional) Fix terminal behavior
 
@@ -116,8 +100,6 @@ To make commands like `clear` work:
 mkdir -p rootfs/usr/share
 sudo cp -a /usr/share/terminfo rootfs/usr/share/
 ```
-
----
 
 ## Run
 
@@ -131,8 +113,6 @@ You should see:
 container:/#
 ```
 
----
-
 ## Verify isolation
 
 Inside the container:
@@ -144,16 +124,12 @@ hostname       # should be "container"
 ls /           # shows only rootfs contents
 ```
 
----
-
 ## Notes
 
 - Requires `sudo` (namespaces need privileges in this setup)
 - This is a learning project, not production-safe
 - Uses `chroot()` (not full isolation like real container runtimes)
 - Root inside container is still root on host (no user namespace yet)
-
----
 
 ## Why I am building this ?
 
@@ -165,5 +141,3 @@ I wanted to understand what a container really is, and see how:
 - `/proc` reflects different realities
 - filesystems are switched
 - the kernel presents a different view to a process
-
----
