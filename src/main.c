@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "config.h"
 #include "runtime.h"
@@ -30,6 +31,10 @@ int main(int argc, char **argv) {
     config.use_pid_ns = true;
     config.use_uts_ns = true;
     config.use_mount_ns = true;
+    config.use_user_ns = true;
+
+    config.host_uid = getuid();
+    config.host_gid = getgid(); 
 
     return run_container(&config);
 }
