@@ -27,6 +27,44 @@ static void *xmalloc(size_t size) {
     return ptr;
 }
 
+static  void setup_environment(void) {
+    /*
+     * Remove host prompt behaviour and shell hooks that make 
+     * the container leaky
+     * */
+    unsetenv("PROMPT_COMMAND");
+    unsetenv("PS0");
+    unsetenv("PS2");
+    unsetenv("PS3");
+    unsetenv("PS4");
+
+    // set a few shell environment variables
+    if (setenv("PATH", "/bin/:/usr/bin/", 1) < 0) {
+        pdie("setenv PATH");
+    }
+
+    if (setenv("HOME", "/root", 1) < 0) {
+        pdie("setenv HOME");
+    }
+
+    if (setenv("USER", "root", 1) < 0) {
+        pdie("setenv USER");
+    }
+
+    if (setenv("LOGNAME", "root", 1) < 0) {
+        pdie("setenv LOGNAME");
+    }
+
+    if (setenv("PS1", "container:\\w# ", 1) < 0) {
+        pdie("setenv PS1");
+    }
+
+    if (setenv("TERM", "xterm-256color", 1) < 0) {
+        pdie("setenv TERM");
+    }
+
+}
+
 int child_entry(void *arg) {
     struct child_context *ctx = arg;
     struct container_config *config = ctx->config;
@@ -52,6 +90,8 @@ int child_entry(void *arg) {
             pdie("mount_procfs");
         }
     }
+
+    setup_environment();
 
     execvp(config->argv[0], config->argv);
     pdie("execvp"); // we only reach here if execvp() fails
