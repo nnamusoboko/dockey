@@ -182,6 +182,10 @@ pid_t spawn_container(struct container_config *config) {
     struct child_context *ctx;
 
     flags = SIGCHLD;
+    
+    ctx = xmalloc(sizeof(*ctx));
+    ctx->config- = config;
+
 
     if (pipe(ctx->sync_pipe) < 0) {
         pdie("pipe");
@@ -202,8 +206,6 @@ pid_t spawn_container(struct container_config *config) {
     stack = xmalloc(STACK_SIZE);
     stack_top = (char *)stack + STACK_SIZE;
 
-    ctx = xmalloc(sizeof(*ctx));
-    ctx->config = config;
 
     pid = clone(child_entry, stack_top, flags, ctx);
     if (pid < 0) {
