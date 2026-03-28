@@ -7,6 +7,7 @@
 #include <string.h>  // strlen
 #include <unistd.h>  // execvp, sethostname
 #include <stddef.h> // like size_t
+#include <fcntl.h>
 
 #include "process.h"
 #include "mount.h"
@@ -25,6 +26,28 @@ static void *xmalloc(size_t size) {
         pdie("malloc");
     }
     return ptr;
+}
+
+static void write_file(const char *path, const char *data) {
+    int fd;
+    ssize_t written;
+    size_t len;
+
+    fd = open(path, O_WRONLY);
+    if (fd < 0) {
+        pdie("open path");
+    }
+
+    len = strlen(data);
+    written = write(fd, data, len);
+    if (written < 0 || (size_t)written != len) {
+        close(fd);
+        pdie("write");
+    }
+
+    if (close(fd) < 0) {
+        pdie("close");
+    }
 }
 
 static  void setup_environment(void) {
