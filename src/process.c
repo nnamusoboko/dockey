@@ -109,9 +109,35 @@ static  void setup_environment(void) {
 
 }
 
+static void wait_for_parent_mapping(int read_fd) {
+    char buf;
+    ssize_t n;
+
+    n = read(read_fd, &buf, 1);
+    if (n < 0) {
+        pdie("read sync pipe");
+    }
+
+    /*
+     * n == 0: parent closed pipe without writing
+     * still enough as "continue" signal
+     */
+    if (close(read_fd) < 0) {
+        pdie("close sync read_fd");
+    }
+} 
+
 int child_entry(void *arg) {
     struct child_context *ctx = arg;
     struct container_config *config = ctx->config;
+
+    if (config->use_user_ns) {
+        close(ctx->sync_pipe[1]);
+        wait_for_parent_mapping(ctx->sync_pipe[0]);
+    } else {
+        close(ctx->sync_pipe[0]);
+        close(ctx->sync_pipe[1]);
+    }
 
     if (config->use_uts_ns) {
         if (sethostname(config->hostname, strlen(config->hostname)) < 0) {
@@ -153,6 +179,10 @@ pid_t spawn_container(struct container_config *config) {
 
     flags = SIGCHLD;
 
+    if (pipe(ctx->sync_pipe) < 0) {
+        pdie("pipe");
+    }
+
     if (config->use_pid_ns) {
         flags |= CLONE_NEWPID;
     }
@@ -175,5 +205,24 @@ pid_t spawn_container(struct container_config *config) {
     if (pid < 0) {
         pdie("clone");
     }
+
+    if (config->use_user_ns) {
+        close(ctx->sync_pipe[0]);
+
+        setup_uid_gid_map(pid, config->host_uid, config->host_gid);
+
+        /* Signal chil that mapping is complete*/
+        if (write(ctx->sync_pipe[1], "x", 1) < 0) {
+            pdie("write sync pipe");
+        }
+
+        if (close(ctx->sync_pipe[1]) < 0) {
+            pdie("close sync write_fd");
+        }
+    } else {
+        close(ctx->sync_pipe[0]);
+        close(ctx->sync_pipe[1]);
+    }
+
     return pid;
 }
