@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #define _GNU_SOURCE // needed for clone
 
 #include <sched.h>   // gives clone and namespace flags
@@ -48,6 +49,26 @@ static void write_file(const char *path, const char *data) {
     if (close(fd) < 0) {
         pdie("close");
     }
+}
+
+static void setup_uid_gid_map(pid_t child_pid, uid_t host_uid, gid_t host_gid) {
+    char path[256];
+    char map[256];
+
+    /*
+     * For unpriveliged GID mapping
+     * echo deny > /proc/<pid>/setgroups
+     * before writing gid_map
+     * */
+
+    snprintf(path, sizeof(path), "/proc/%d/setgroups", child_pid);
+    if (access(path, F_OK) == 0) {
+        write_file(path, "deny");
+    }
+
+    snprintf(path, sizeof(path), "/proc/%d/uid_map", child_pid);
+    snprintf(path, sizeof(map), "0 %d 1\n", host_gid);
+    write_file(path, map);
 }
 
 static  void setup_environment(void) {
