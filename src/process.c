@@ -184,7 +184,7 @@ pid_t spawn_container(struct container_config *config) {
     flags = SIGCHLD;
     
     ctx = xmalloc(sizeof(*ctx));
-    ctx->config- = config;
+    ctx->config = config;
 
 
     if (pipe(ctx->sync_pipe) < 0) {
