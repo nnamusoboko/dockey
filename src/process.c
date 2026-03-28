@@ -67,7 +67,7 @@ static void setup_uid_gid_map(pid_t child_pid, uid_t host_uid, gid_t host_gid) {
     }
 
     snprintf(path, sizeof(path), "/proc/%d/uid_map", child_pid);
-    snprintf(path, sizeof(map), "0 %d 1\n", host_uid);
+    snprintf(map, sizeof(map), "0 %d 1\n", host_uid);
     write_file(path, map);
 
     snprintf(path, sizeof(path), "/proc/%d/gid_map", child_pid);
