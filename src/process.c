@@ -1,14 +1,14 @@
-#include <sys/types.h>
 #define _GNU_SOURCE // needed for clone
 
 #include <sched.h>   // gives clone and namespace flags
-#include <signal.h>  // SIGCHLD
+#include <signal.h>  
 #include <stdio.h> 
 #include <stdlib.h>
-#include <string.h>  // strlen
-#include <unistd.h>  // execvp, sethostname
+#include <string.h> 
+#include <unistd.h>
 #include <stddef.h> // like size_t
 #include <fcntl.h>
+#include <sys/types.h>
 
 #include "process.h"
 #include "mount.h"
