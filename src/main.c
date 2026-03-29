@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     config.use_user_ns = true;
 
     config.host_uid = getuid();
-    config.host_gid = getgid(); 
+    config.host_gid = getgid();
 
     return run_container(&config);
 }
