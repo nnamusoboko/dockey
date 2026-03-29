@@ -203,6 +203,10 @@ pid_t spawn_container(struct container_config *config) {
         flags |= CLONE_NEWNS;
     }
 
+    if (config->use_user_ns) {
+        flags |= CLONE_NEWUSER;
+    }
+
     stack = xmalloc(STACK_SIZE);
     stack_top = (char *)stack + STACK_SIZE;
 
