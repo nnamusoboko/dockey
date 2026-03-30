@@ -1,6 +1,6 @@
 # Dockey
 
-A minimal container runtime built from scratch  to understand how containers actually work under the hood.
+A minimal container runtime built from scratch to investigate how containers actually work under the hood.
 
 ## What it does
 
@@ -9,11 +9,12 @@ Dockey demonstrates core container concepts using Linux primitives:
 - PID namespace → process isolation  
 - UTS namespace → hostname isolation  
 - Mount namespace → mount isolation  
+- User namespace → rootless container support  
 - `chroot()` → filesystem isolation  
 - `/proc` remount → correct process visibility  
 - Basic environment sanitization  
 
-It allows you to run a command inside an isolated environment
+It allows you to run a command inside an isolated environment.
 
 ## Project Structure
 
@@ -23,7 +24,7 @@ It allows you to run a command inside an isolated environment
 ├── rootfs/         # minimal filesystem for container
 ├── Makefile
 └── README.md
-```
+````
 
 ## Build
 
@@ -94,8 +95,6 @@ echo 'root:x:0:' > rootfs/etc/group
 
 ### (Optional) Fix terminal behavior
 
-To make commands like `clear` work:
-
 ```bash
 mkdir -p rootfs/usr/share
 sudo cp -a /usr/share/terminfo rootfs/usr/share/
@@ -103,22 +102,34 @@ sudo cp -a /usr/share/terminfo rootfs/usr/share/
 
 ## Run
 
+### Rootless
+
+```bash
+./dockey run /bin/bash
+```
+
+> Note: On Ubuntu, you may need to temporarily disable:
+>
+> ```bash
+> sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+> ```
+>
+> This removes second layer security restrictions for unprivilged user namespaces
+
+### With sudo
+
 ```bash
 sudo ./dockey run /bin/bash
 ```
 
-You should see:
-
-```bash
-container:/#
-```
+> Enables all capabilities in user namespace with container root mapped to host root(real root)
 
 ## Verify isolation
 
 Inside the container:
 
 ```bash
-echo $$        # should be 1
+echo $$        # PID inside container
 ps             # very few processes
 hostname       # should be "container"
 ls /           # shows only rootfs contents
@@ -126,16 +137,16 @@ ls /           # shows only rootfs contents
 
 ## Notes
 
-- Requires `sudo` (namespaces need privileges in this setup)
 - This is a learning project, not production-safe
 - Uses `chroot()` (not full isolation like real container runtimes)
-- Root inside container is still root on host (no user namespace yet)
+- Root inside the container is mapped via user namespaces (rootless mode)
+- Host security policies (e.g., AppArmor) may restrict some features
 
-## Why I am building this ?
+## Why I am building this
 
-Out of curiosity about Docker works
+Out of curiosity.
 
-I wanted to understand what a container really is, and see how:
+I wanted to understand what a container really is and  see how:
 
 - processes are isolated
 - `/proc` reflects different realities
