@@ -129,7 +129,7 @@ static void wait_for_parent_mapping(int read_fd) {
     if (close(read_fd) < 0) {
         pdie("close sync read_fd");
     }
-} 
+}
 
 int child_entry(void *arg) {
     struct child_context *ctx = arg;
@@ -141,6 +141,18 @@ int child_entry(void *arg) {
     } else {
         close(ctx->sync_pipe[0]);
         close(ctx->sync_pipe[1]);
+    }
+
+    // Synchronize process IDs with the new namespace mapping 
+    // and lock them to 0 (Root) to prevent identity mismatch.
+    if (config->use_user_ns) {
+        if (setresgid(0, 0, 0) < 0) {
+            pdie("setresgid");
+        }
+
+        if (setresuid(0, 0, 0) < 0) {
+            pdie("setresuid");
+        }
     }
 
     if (config->use_uts_ns) {
