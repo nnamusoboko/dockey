@@ -9,12 +9,16 @@
 #include <stddef.h> // like size_t
 #include <fcntl.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 
 #include "process.h"
 #include "mount.h"
 #include "fs.h"
 
 #define STACK_SIZE (1024 * 1024)
+
+static void exec_container_command(struct container_config *config);
+static int run_init_process(struct container_config *config);
 
 static void pdie(const char *msg) {
     perror(msg);
@@ -131,6 +135,45 @@ static void wait_for_parent_mapping(int read_fd) {
     }
 }
 
+static void exec_container_command(struct container_config *config) {
+    execvp(config->argv[0], config->argv);
+    pdie("execvp");
+}
+
+static int run_init_process(struct container_config *config) {
+    pid_t pid;
+    int status;
+
+    pid = fork();
+    if (pid < 0) {
+        pdie("fork");
+    }
+
+    if (pid == 0) {
+        exec_container_command(config);
+    }
+
+    while (1) {
+        pid_t w = waitpid(-1, &status, 0);
+
+        if (w < 0) {
+            pdie("waitpid");
+        }
+
+        if (w == pid) {
+            if (WIFEXITED(status)) {
+                return WEXITSTATUS(status);
+            }
+
+            if (WIFSIGNALED(status)) {
+                return 128 + WTERMSIG(status);
+            }
+
+            return EXIT_FAILURE;
+        }
+    }
+}
+
 int child_entry(void *arg) {
     struct child_context *ctx = arg;
     struct container_config *config = ctx->config;
@@ -179,10 +222,7 @@ int child_entry(void *arg) {
 
     setup_environment();
 
-    execvp(config->argv[0], config->argv);
-    pdie("execvp"); // we only reach here if execvp() fails
-
-    return -1;
+    return run_init_process(config);
 }
 
 
