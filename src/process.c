@@ -176,6 +176,34 @@ static int run_init_process(struct container_config *config) {
     }
 }
 
+/*
+ * helper to install handlers
+ */
+
+static void setup_signal_forwarding(void) {
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = forward_signal;
+    sigemptyset(&sa.sa_mask);
+
+    if (sigaction(SIGINT, &sa, NULL) < 0) {
+        pdie("sigaction SIGINT");  
+    }
+
+    if (sigaction(SIGTERM, &sa, NULL) < 0) {
+        pdie("sigaction SIGTERM");
+    }
+
+    if (sigaction(SIGHUP, &sa, NULL) < 0) {
+        pdie("sigaction SIGHUP");
+    }
+
+    if (sigaction(SIGQUIT, &sa, NULL) < 0) {
+        pdie("sigaction SIGQUIT");
+    }
+}
+
 static void forward_signal(int signo) {
     if (g_container_pid > 0) {
         kill(g_container_pid, signo);
