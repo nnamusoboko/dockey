@@ -17,6 +17,8 @@
 
 #define STACK_SIZE (1024 * 1024)
 
+static pid_t g_container_pid = -1;
+
 static void exec_container_command(struct container_config *config);
 static int run_init_process(struct container_config *config);
 
@@ -153,6 +155,13 @@ static int run_init_process(struct container_config *config) {
         exec_container_command(config);
     }
 
+    /*
+     * g_container_pid : stores workload PID so handler knows where to send signals
+     * setup_signal_forwarding(): makes PID 1 ready to catch and forward signals
+     */
+    g_container_pid = pid;
+    setup_signal_forwarding();
+
     while (1) {
         pid_t w = waitpid(-1, &status, 0);
 
@@ -171,6 +180,40 @@ static int run_init_process(struct container_config *config) {
 
             return EXIT_FAILURE;
         }
+    }
+}
+
+/*
+ * helper to install handlers
+ */
+
+static void setup_signal_forwarding(void) {
+    struct sigaction sa;
+
+    memset(&sa, 0, sizeof(sa));
+    sa.sa_handler = forward_signal;
+    sigemptyset(&sa.sa_mask);
+
+    if (sigaction(SIGINT, &sa, NULL) < 0) {
+        pdie("sigaction SIGINT");  
+    }
+
+    if (sigaction(SIGTERM, &sa, NULL) < 0) {
+        pdie("sigaction SIGTERM");
+    }
+
+    if (sigaction(SIGHUP, &sa, NULL) < 0) {
+        pdie("sigaction SIGHUP");
+    }
+
+    if (sigaction(SIGQUIT, &sa, NULL) < 0) {
+        pdie("sigaction SIGQUIT");
+    }
+}
+
+static void forward_signal(int signo) {
+    if (g_container_pid > 0) {
+        kill(g_container_pid, signo);
     }
 }
 
