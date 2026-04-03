@@ -21,6 +21,8 @@ static pid_t g_container_pid = -1;
 
 static void exec_container_command(struct container_config *config);
 static int run_init_process(struct container_config *config);
+static void setup_signal_forwarding(void);
+static void forward_signal(int signo);
 
 static void pdie(const char *msg) {
     perror(msg);
