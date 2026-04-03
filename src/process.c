@@ -155,6 +155,13 @@ static int run_init_process(struct container_config *config) {
         exec_container_command(config);
     }
 
+    /*
+     * g_container_pid : stores workload PID so handler knows where to send signals
+     * setup_signal_forwarding(): makes PID 1 ready to catch and forward signals
+     */
+    g_container_pid = pid;
+    setup_signal_forwarding();
+
     while (1) {
         pid_t w = waitpid(-1, &status, 0);
 
