@@ -17,6 +17,8 @@
 
 #define STACK_SIZE (1024 * 1024)
 
+static pid_t g_container_pid = -1;
+
 static void exec_container_command(struct container_config *config);
 static int run_init_process(struct container_config *config);
 
@@ -171,6 +173,12 @@ static int run_init_process(struct container_config *config) {
 
             return EXIT_FAILURE;
         }
+    }
+}
+
+static void forward_signal(int signo) {
+    if (g_container_pid > 0) {
+        kill(g_container_pid, signo);
     }
 }
 
