@@ -1,3 +1,4 @@
+#include <asm-generic/errno-base.h>
 #define _GNU_SOURCE // needed for clone
 
 #include <sched.h>   // gives clone and namespace flags
@@ -10,6 +11,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #include "process.h"
 #include "mount.h"
@@ -168,6 +170,9 @@ static int run_init_process(struct container_config *config) {
         pid_t w = waitpid(-1, &status, 0);
 
         if (w < 0) {
+            if (errno == EINTR) {
+                continue;
+            }
             pdie("waitpid");
         }
 
