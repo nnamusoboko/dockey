@@ -156,6 +156,10 @@ static int run_init_process(struct container_config *config) {
     }
 
     if (pid == 0) {
+        if (setpgid(0, 0) < 0) {
+            pdie("setpgid");
+        }
+
         exec_container_command(config);
     }
 
